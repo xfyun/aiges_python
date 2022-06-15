@@ -61,11 +61,11 @@ def call_wrapper(args):
 
 
 def CheckFunc_Run(mod,func_name,func_parameter_list):
-    if "wrapperOnceExec" in dir(mod): #判断文件是否存在
+    if func_name in dir(mod): #判断文件是否存在
         print("nice ...")
-    wrapperOnceExec =getattr(mod, "wrapperOnceExec")
+    wrapperOnceExec =getattr(mod, func_name)
     paramter_num = wrapperOnceExec.__code__.co_argcount 
-    if paramter_num == 2:# 判断函数参数个数
+    if paramter_num == len(func_parameter_list):# 判断函数参数个数
         print("nice ...")
     ins,outs = str(inspect.signature(wrapperOnceExec)).split("->")
     ins_list = re.sub('\(|\)', '', ins).replace(' ', '').split(",")
