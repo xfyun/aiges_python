@@ -30,16 +30,53 @@
 #  Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
 #  Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
 #  Vestibulum commodo. Ut rhoncus gravida arcu.
-
+import errno
+import inspect
 import argparse
 import importlib
+from logging import exception
+from msilib.schema import Error
+import re
+import string
+from tkinter import W
+
+
+
 def call_wrapper(args):
     print(args)
+
+    # 类型检查
     mod = importlib.import_module("wrapper")
-    err_func =getattr(mod, "wrapperError")
-    print(err_func(100))
+ 
+    CheckFunc_Run(mod,"wrapperInit",['int', 'int'])
+    CheckFunc_Run(mod,"wrapperOnceExec",['str', 'dict', 'list', 'list', 'list', 'int'])
+    CheckFunc_Run(mod,"wrapperDestroy",['str'])
+
+    mod.wrapperInit(1,2)
+    mod.wrapperOnceExec("www",{"w":1234},[1,2],[1,2],[1,2],5)
+    mod.wrapperDestroy("destory")
+    
     print(dir(mod))
     print("call done")
+
+
+def CheckFunc_Run(mod,func_name,func_parameter_list):
+    if "wrapperOnceExec" in dir(mod): #判断文件是否存在
+        print("nice ...")
+    wrapperOnceExec =getattr(mod, "wrapperOnceExec")
+    paramter_num = wrapperOnceExec.__code__.co_argcount 
+    if paramter_num == 2:# 判断函数参数个数
+        print("nice ...")
+    ins,outs = str(inspect.signature(wrapperOnceExec)).split("->")
+    ins_list = re.sub('\(|\)', '', ins).replace(' ', '').split(",")
+    cate_list = []
+    for i in range(len(func_parameter_list)):
+        _ , cate = ins_list[i].split(":")
+        tl_cate = func_parameter_list[i]
+        if tl_cate != cate:
+            print("The parameter type match error...")
+    print("The parameter type match was successful...")
+
 
 
 def main():
