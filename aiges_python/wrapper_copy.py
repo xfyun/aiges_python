@@ -14,7 +14,7 @@ if not hasattr(sys, 'argv'):
 '''
 
 
-def wrapperInit(config: {}) -> int:
+def wrapperInit(config: dict) -> int:
     return 0
 
 
@@ -43,7 +43,7 @@ def wrapperFini() -> int:
 '''
 
 
-def wrapperOnceExec(usrTag: str, params: {}, reqData: [], respData: [], psrIds: [], psrCnt: int) -> int:
+def wrapperOnceExec(usrTag: str, params: dict, reqData: list, respData: list, psrIds: list, psrCnt: int) -> int:
     print("hello world")
     print(usrTag)
     print(params)
@@ -53,16 +53,16 @@ def wrapperOnceExec(usrTag: str, params: {}, reqData: [], respData: [], psrIds: 
     return 100
 
 
-def wrapperCreate(usrTag: str, params: [], psrIds: [], psrCnt: int) -> str:
+def wrapperCreate(usrTag: str, params: list, psrIds: list, psrCnt: int) -> str:
     return ""
 
 
-def wrapperWrite(handle: str, datas: []) -> int:
+def wrapperWrite(handle: str, datas: list) -> int:
     return 0
 
 
-def wrapperRead(handle: str) -> []:
-    return []
+def wrapperRead(handle: str) -> list:
+    return list
 
 
 def wrapperDestroy(handle: str) -> int:
