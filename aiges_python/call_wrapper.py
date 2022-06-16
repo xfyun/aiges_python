@@ -34,6 +34,7 @@ import inspect
 import argparse
 import importlib
 from logging import exception
+from PIL import Image
 import logging
 import re
 
@@ -42,6 +43,10 @@ logging.getLogger().setLevel(logging.INFO)  # 设置log等级
 
 def call_wrapper(args):
     print(args)
+
+    img_PIL = Image.open("aiges_python\yeye.jpg")
+    reqData = [{"data":img_PIL}]
+    
 
     # 类型检查
     mod = importlib.import_module("wrapper_copy")
@@ -52,7 +57,7 @@ def call_wrapper(args):
     CheckFunc_Run(mod, "wrapperDestroy", ['str'])
 
     mod.wrapperInit({"he": "ha"})
-    mod.wrapperOnceExec("www", {"w": 1234}, [1, 2], [1, 2], [1, 2], 5)
+    mod.wrapperOnceExec("www", {"w": 1234}, reqData, [1, 2], [1, 2], 5)
     mod.wrapperDestroy("destory")
 
     logging.info("Wraper function has been checked and ran successfully ")

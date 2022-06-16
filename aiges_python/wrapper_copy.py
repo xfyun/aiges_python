@@ -1,4 +1,11 @@
 import sys
+import numpy as np
+from PIL import Image
+import io
+import flags
+from mmocr.utils.ocr import MMOCR
+import json
+
 if not hasattr(sys, 'argv'):
     sys.argv = ['']
 
@@ -14,8 +21,19 @@ if not hasattr(sys, 'argv'):
 '''
 
 
+model = None
+
+logger = flags.logger
+
 def wrapperInit(config: dict) -> int:
+    logger.info("model initializing...")
+    logger.info("engine config %s" % str(config))
+    global model
+    # Load models into memory
+    model = MMOCR(det='TextSnake', recog=None)
+    logger.info("init success")
     return 0
+
 
 
 '''
@@ -44,13 +62,15 @@ def wrapperFini() -> int:
 
 
 def wrapperOnceExec(usrTag: str, params: dict, reqData: list, respData: list, psrIds: list, psrCnt: int) -> int:
-    print("hello world")
-    print(usrTag)
-    print(params)
-    print(reqData)
-    print(psrIds)
-    print(psrCnt)
-    return 100
+    img = np.array(Image.open(io.BytesIO(reqData[0]["data"])).convert('RGB'))
+    global model
+    rlt = model.readtext(img,details=True)
+    rlt = json.dumps(rlt)
+    respData.append({"key": "boxes", "data": rlt, "len": len(rlt), "status": 3, "type": 0})
+    #respData.append(rlt)
+    print(respData, flush=True)
+    return 0
+
 
 
 def wrapperCreate(usrTag: str, params: list, psrIds: list, psrCnt: int) -> str:
@@ -70,6 +90,9 @@ def wrapperDestroy(handle: str) -> int:
 
 
 def wrapperError(ret: int) -> str:
-    if ret == 100:
-        return "this is a tese error return"
-    return ""
+    if ret == 10013:
+        return "reqData is empty"
+    elif ret == 10001:
+        return "load onnx model failed"
+    else:
+        return "other error code"
